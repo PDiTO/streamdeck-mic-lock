@@ -1,0 +1,17 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="pi.css">
+</head>
+<body>
+  <section>
+    <label class="option"><input type="checkbox" id="enabled"> <span><b>Lock my mic</b><small>Switch back when macOS jumps to newly connected headphones.</small></span></label>
+    <label class="option"><input type="checkbox" id="strict"> <span><b>Strict</b><small>Only this key can change the mic. Menu bar and System Settings changes are undone.</small></span></label>
+  </section>
+  <p class="hint">Tap the key for the next mic. Hold it to return to your home mic.</p>
+  <div id="status" class="hint"></div>
+  <div id="devices"></div>
+  <script src="pi.js"></script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+{
+  "name": "streamdeck-mic-lock",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "build": "sh scripts/build-helper.sh && node scripts/assets.mjs",
+    "test": "node --test test/*.test.mjs",
+    "install:local": "node scripts/install.mjs",
+    "uninstall:local": "node scripts/install.mjs --uninstall",
+    "validate": "streamdeck validate com.pdito.mic-lock.sdPlugin",
+    "package": "streamdeck pack com.pdito.mic-lock.sdPlugin --output dist"
+  },
+  "devDependencies": {
+    "@elgato/cli": "1.9.0",
+    "sharp": "0.35.4"
+  }
+}

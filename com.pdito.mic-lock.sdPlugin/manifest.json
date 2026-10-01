@@ -1,0 +1,47 @@
+{
+  "$schema": "https://schemas.elgato.com/streamdeck/plugins/manifest.json",
+  "UUID": "com.pdito.mic-lock",
+  "Name": "Mic Lock",
+  "Author": "Paul Davis",
+  "Description": "Cycle through your microphones with one key, and stop macOS switching your mic when AirPods or other Bluetooth headphones connect.",
+  "URL": "https://github.com/PDiTO/streamdeck-mic-lock",
+  "Version": "1.0.0.0",
+  "SDKVersion": 2,
+  "CodePath": "plugin.mjs",
+  "Nodejs": {
+    "Version": "24"
+  },
+  "OS": [
+    {
+      "Platform": "mac",
+      "MinimumVersion": "13"
+    }
+  ],
+  "Software": {
+    "MinimumVersion": "7.1"
+  },
+  "Icon": "imgs/plugin",
+  "Category": "Mic Lock",
+  "CategoryIcon": "imgs/category",
+  "Actions": [
+    {
+      "UUID": "com.pdito.mic-lock.cycle",
+      "Name": "Mic Lock",
+      "Icon": "imgs/action",
+      "Tooltip": "Tap: next microphone. Hold: back to your home mic. Keeps your choice when headphones connect.",
+      "PropertyInspectorPath": "pi/index.html",
+      "Controllers": [
+        "Keypad"
+      ],
+      "SupportedInMultiActions": false,
+      "UserTitleEnabled": false,
+      "DisableAutomaticStates": true,
+      "States": [
+        {
+          "Image": "imgs/key",
+          "ShowTitle": false
+        }
+      ]
+    }
+  ]
+}
