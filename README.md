@@ -40,7 +40,7 @@ Hold the key for about a second to jump back to your home mic. Your home mic sta
 
 Leave it alone otherwise. When AirPods, Beats or any other headset connects and macOS makes it the input, Mic Lock switches back to your mic within a moment. The blue padlock in the corner means the lock is on.
 
-You can still change the mic from the menu bar or System Settings. Mic Lock treats that as your choice, keeps it and updates the key.
+You can still change the mic from the menu bar or System Settings, and Mic Lock keeps your choice and updates the key. The exception is Bluetooth headphones. Picking those from the menu bar looks exactly like macOS grabbing them, so Mic Lock switches back. Use the key to choose them instead.
 
 ## Settings
 
@@ -59,7 +59,9 @@ Below that is every mic your Mac has seen, connected or not. For each one you ca
 
 ## How it tells your changes from macOS's
 
-macOS switches the input right after a headset connects. So if the input changes to a device that appeared in the last 6 seconds, Mic Lock assumes macOS did it and switches back. Any other change counts as yours.
+macOS switches the input to Bluetooth headphones when they connect. It does it again when their audio moves over to the Mac. AirPods can stay connected while playing from your iPhone, then take the mic the moment you start a video on the Mac.
+
+So Mic Lock switches back whenever the input lands on a Bluetooth device it didn't pick. It also switches back if the input moves to any device that appeared in the last 6 seconds, which covers USB mics and webcams that macOS selects when you plug them in. Any other change counts as yours.
 
 If something keeps switching the mic over and over, Mic Lock stops after 5 tries in 15 seconds instead of fighting it forever.
 
@@ -76,7 +78,7 @@ If something keeps switching the mic over and over, Mic Lock stops after 5 tries
 
 **Mic Lock isn't in the actions list.** Quit Stream Deck from its menu bar icon and open it again.
 
-**macOS still switched to my headphones.** A slow Bluetooth connection can switch more than 6 seconds after the headset appears, which looks like a choice you made. Turn on Strict.
+**Mic Lock didn't do what I expected.** It keeps a log of every mic change it sees and what it did about it. Open it with `open ~/Library/Logs/Mic\ Lock/mic-lock.log` and include the last few lines if you file an issue.
 
 ## Development
 

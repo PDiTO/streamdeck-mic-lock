@@ -49,13 +49,13 @@ test('A menu-bar change to an existing device becomes the new lock', () => {
   assert.equal(s.lock.settings.locked, 'cam');
 });
 
-test('Choosing freshly connected headphones from the menu after the grace window sticks', () => {
-  const s = setup();
-  s.report('xlr', [XLR, CAM, PODS]);
+test('Choosing a USB device from the menu after the grace window sticks', () => {
+  const s = setup(undefined, [XLR]);
+  s.report('xlr', [XLR, CAM]);
   s.advance(GRACE_MS + 1);
-  s.report('pods');
+  s.report('cam');
   assert.deepEqual(s.sets, []);
-  assert.equal(s.lock.settings.locked, 'pods');
+  assert.equal(s.lock.settings.locked, 'cam');
 });
 
 test('Strict mode reverts every change it did not make', () => {
@@ -139,4 +139,32 @@ test('Devices are remembered in first-seen order for the settings page', () => {
 test('The mic in use on first run becomes home', () => {
   const s = setup({ enabled: true }, [XLR, CAM], 'cam');
   assert.equal(s.lock.settings.home, 'cam');
+});
+
+test('A Bluetooth headset taking the mic long after it connected is still reverted', () => {
+  // AirPods can sit connected while playing from an iPhone, then grab the mic when a video starts on the Mac.
+  const s = setup(undefined, [XLR, CAM, PODS]);
+  s.advance(60 * 60 * 1000);
+  s.report('pods');
+  assert.deepEqual(s.sets, ['xlr']);
+  s.land();
+  assert.equal(s.lock.settings.locked, 'xlr');
+});
+
+test('Choosing headphones with the key still works and holds', () => {
+  const s = setup(undefined, [XLR, PODS]);
+  s.lock.select('pods'); s.land();
+  s.advance(60 * 1000);
+  s.report('xm4', [XLR, PODS, XM4]);
+  assert.equal(s.sets.at(-1), 'pods');
+});
+
+test('Decisions are logged', () => {
+  const lines = [];
+  const lock = new MicLock({ setDefault: () => {}, log: line => lines.push(line), now: () => 1000 });
+  lock.loadSettings({ enabled: true, home: 'xlr' });
+  lock.snapshot({ inputs: [XLR, PODS], defaultInput: 'xlr', reason: 'initial' });
+  lock.snapshot({ inputs: [XLR, PODS], defaultInput: 'pods', reason: 'default' });
+  assert.match(lines.join('\n'), /default: mic Paul’s AirPods Pro 3/);
+  assert.match(lines.join('\n'), /switching back from Paul’s AirPods Pro 3 to Elgato Wave XLR Dock MK.2/);
 });

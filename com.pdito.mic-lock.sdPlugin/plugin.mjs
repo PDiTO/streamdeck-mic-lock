@@ -1,4 +1,7 @@
 import { spawn } from 'node:child_process';
+import { appendFileSync, mkdirSync, renameSync, statSync } from 'node:fs';
+import { homedir } from 'node:os';
+import { join } from 'node:path';
 import { createInterface } from 'node:readline';
 import { fileURLToPath } from 'node:url';
 import { MicLock } from './lib/lock.mjs';
@@ -11,6 +14,18 @@ const pluginUUID = args['-pluginUUID'];
 const ws = new WebSocket(`ws://127.0.0.1:${args['-port']}`);
 const send = message => { if (ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify(message)); };
 
+// A small rolling log of what the lock saw and did, for figuring out surprises.
+const logDir = join(homedir(), 'Library/Logs/Mic Lock');
+const logFile = join(logDir, 'mic-lock.log');
+function log(message) {
+  try {
+    mkdirSync(logDir, { recursive: true });
+    if ((statSync(logFile, { throwIfNoEntry: false })?.size ?? 0) > 512 * 1024) renameSync(logFile, `${logFile}.old`);
+    appendFileSync(logFile, `${new Date().toISOString()} ${message}\n`);
+  } catch { /* Logging must never break the lock. */ }
+}
+log('started');
+
 let helper = null;
 let restartDelay = 1000;
 let stopping = false;
@@ -18,6 +33,7 @@ const lock = new MicLock({
   setDefault: uid => helper?.stdin.write(`set ${uid}\n`),
   save: settings => send({ event: 'setGlobalSettings', context: pluginUUID, payload: settings }),
   onChange: () => controller.renderAll(),
+  log,
 });
 const controller = new Controller(send, lock);
 
@@ -34,9 +50,10 @@ function startHelper() {
     controller.helperOk = true;
     lock.snapshot(message);
   });
-  child.on('exit', () => {
+  child.on('exit', code => {
     if (helper === child) helper = null;
     if (stopping) return;
+    log(`helper exited (${code}), restarting`);
     controller.helperOk = false;
     controller.renderAll();
     setTimeout(startHelper, restartDelay);
